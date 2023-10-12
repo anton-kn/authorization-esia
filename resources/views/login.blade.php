@@ -16,7 +16,7 @@
 <body>
     <div class="container">
         <h3>Вход в систему</h3>
-        <form method="POST" action="{{ route('login') }}">
+        <form method="POST" action="{{ route('store') }}" enctype="multipart/form-data">
             @csrf
             <label for="inputEmail3" class="col-sm-2 col-form-label">Эл. почта</label>
             <div class="col-sm-10">
@@ -25,9 +25,17 @@
             </div>
             <label for="inputPassword3" class="col-sm-2 col-form-label">Пароль</label>
             <div class="col-sm-10">
-                <input type="password" name="password" class="form-control" id="inputPassword3" value="DF13w813+=nMx">
+                <input type="password" name="password" class="form-control" id="inputPassword3" value="">
             </div>
-            <button type="submit" class="btn btn-primary">Войти</button>
+            <div class="mb-3">
+                <label for="formFile" class="form-label">Суть заявления</label>
+                <input class="form-control" type="file" name="file[]" id="formFile">
+            </div>
+            <div class="mb-3">
+                <label for="formFile" class="form-label">Приложения к заявлению</label>
+                <input class="form-control" type="file" name="file[]" id="formFile">
+            </div>
+            <button type="submit" class="btn btn-primary">Подать документы</button>
         </form>
     </div>
 </body>

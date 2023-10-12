@@ -2,6 +2,17 @@
 
 namespace App\Http\UseCase;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Cookie\CookieJar;
+use GuzzleHttp\Cookie\SetCookie;
+use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\RequestOptions;
+use GuzzleHttp\TransferStats;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Cookie;
+
 
 class Authorization
 {
@@ -99,7 +110,7 @@ class Authorization
         $jar = new CookieJar();
         $client = new Client([
             'headers' => [
-                "User-Agent" => "Mozilla/5.0 (X11; Linux x86_64; rv:108.0) Gecko/20100101 Firefox/108.0",
+                "User-Agent" => $request->headers->get('user-agent'),
             ],
             'cookies' => $jar
         ]);
@@ -117,13 +128,14 @@ class Authorization
             'body' => json_encode($dataRequest),
             'cookies' => $jarCookie,
         ]);
-
+        // сохраняем куки только от госуслуг
         session(['cookies' => $jarCookie]);
 
         $bodyContent = $responseGosLogin->getBody()->getContents();
         $bodyContent = json_decode($bodyContent);
         Log::debug("Содержание тела ", (array) $bodyContent);
-        // обходим капчу, если есть
+
+        // todo - обходим капчу, если есть
         // todo - надо тут еще забрать guid: 6de0f0a8-1155-91ed-b9f7-802ddf624241
         if (isset($bodyContent->action) && $bodyContent->action == "SOLVE_ANOMALY_REACTION") {
             return $this->captcha($request, $client);
@@ -139,14 +151,13 @@ class Authorization
     /**
      * Отправляем код из СМС
      * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse|mixed
      */
     public function sendCodeFromSms(Request $request)
     {
         $cookies = session('cookies');
         $client = new Client([
             'headers' => [
-                "User-Agent" => "Mozilla/5.0 (X11; Linux x86_64; rv:108.0) Gecko/20100101 Firefox/108.0",
+                "User-Agent" => $request->headers->get('user-agent'),
             ],
             'cookies' => $cookies
         ]);
@@ -168,34 +179,35 @@ class Authorization
             ],
             "mode" => "cors",
             "credentials" => "include",
-
-            // 'allow_redirects' => true,
         ]);
 
         $bodyContent = $responseLoginCode->getBody()->getContents();
         $bodyContent = json_decode($bodyContent);
         $redirectUrl = $bodyContent->redirect_url;
-        // dd($bodyContent->redirect_url);
 
         Log::debug("Статус отправки кода из СМС ", (array) $responseLoginCode->getStatusCode());
         Log::debug("Содержание тело ответа: ", (array) $bodyContent);
         Log::debug("Ответ: ", (array) $responseLoginCode);
 
+        // Переходим на сайт stavmirsud
         $jar = new CookieJar();
         $responseStavmirsud = $client->request("GET", $redirectUrl, [
             'cookies' => $jar,
         ]);
 
+        // сохраняем куки от stavmirsud
+        session(['cookies' => $jar]);
+
         Log::debug("Сайт судей: ", (array) $responseStavmirsud);
         Log::debug("Куки: ", (array) $jar);
 
+        return redirect()->action([ReceptionDocumentController::class, 'upload']);
 
-        $cookieAr = [];
-        foreach ($jar->toArray() as $cookie) {
-            $cookieSet = new SetCookie($cookie);
-        }
+        // foreach ($jar->toArray() as $cookie) {
+        //     $cookieSet = new SetCookie($cookie);
+        // }
 
         // не переходит по кукам
-        return redirect("https://lk.stavmirsud.ru/lk")->withCookie($cookieSet->__toString());
+        // return redirect("https://lk.stavmirsud.ru/lk")->withCookie($cookieSet->__toString());
     }
 }

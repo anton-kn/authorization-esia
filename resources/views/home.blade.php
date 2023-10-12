@@ -17,7 +17,7 @@
 <body>
     <div class="m-4">
         <h3>Авторизации на сайте https://lk.stavmirsud.ru/</h3>
-        <a class="btn btn-primary" href="{{ route('login') }}">Вход</a>
+        <a class="btn btn-primary" href="{{ route('document') }}">Вход</a>
     </div>
 </body>
 
