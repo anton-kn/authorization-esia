@@ -15,19 +15,14 @@
 
 <body>
     <div class="container">
-        <h3>Вход в систему</h3>
-        <form method="POST" action="{{ route('login') }}">
+        <h3>Введите код с картинки</h3>
+        <img src="{{ $imageCaptcha }}">
+        <form method="POST" action="">
             @csrf
-            <label for="inputEmail3" class="col-sm-2 col-form-label">Эл. почта</label>
             <div class="col-sm-10">
-                <input type="email" name="email" class="form-control" id="inputEmail3"
-                    value="an-cniazev2012@yandex.ru">
+                <input type="text" name="codeCaptcha" class="form-control" value="">
             </div>
-            <label for="inputPassword3" class="col-sm-2 col-form-label">Пароль</label>
-            <div class="col-sm-10">
-                <input type="password" name="password" class="form-control" id="inputPassword3" value="DF13w813+=nMx">
-            </div>
-            <button type="submit" class="btn btn-primary">Войти</button>
+            <button type="submit" class="btn btn-primary">Отправить</button>
         </form>
     </div>
 </body>

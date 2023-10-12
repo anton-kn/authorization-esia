@@ -1,50 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\UseCase;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Cookie\CookieJar;
-use GuzzleHttp\Cookie\SetCookie;
-use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\RequestOptions;
-use GuzzleHttp\TransferStats;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
-use Symfony\Component\HttpFoundation\Cookie;
 
-/**
- * Summary of AuthorizationController
- */
-class AuthorizationController extends Controller
+class Authorization
 {
-
-    public function test(Request $request)
-    {
-        $jar = new CookieJar();
-        $client = new Client([
-            'headers' => [
-                "User-Agent" => "Mozilla/5.0 (X11; Linux x86_64; rv:108.0) Gecko/20100101 Firefox/108.0",
-            ],
-            'cookies' => $jar,
-        ]);
-
-        $responseLk = $client->request("GET", "https://lk.stavmirsud.ru/lk", [
-            'cookies' => $jar,
-        ]);
-        $cookieAr = [];
-        foreach ($jar->toArray() as $cookie) {
-            $cookieSet = new SetCookie($cookie);
-        }
-
-        // dd($cookieSet->__toString());
-        $strCookie = "mgs_sess_id=4f9bsimchkitkv5ve8bd0c43ea; Domain=lk.stavmirsud.ru; Path=/; HttpOnly";
-        // dd($cookieSet);
-        // не переходит по кукам
-
-        // return redirect("https://lk.stavmirsud.ru/lk")->withCookie(Cookie::fromString($cookieSet->__toString()));
-        return redirect("https://lk.stavmirsud.ru/lk")->withCookie($strCookie);
-    }
 
     /**
      * Получаем каптчу

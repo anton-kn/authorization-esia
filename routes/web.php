@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthorizationController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/test', [AuthorizationController::class, 'test']);
 
 Route::get('/', function () {
     return view('home');
@@ -15,6 +16,8 @@ Route::get('/login', function () {
 Route::get('/login-sms', function () {
     return view("login-sms");
 })->name('login-sms');
+
+Route::get('/captcha', [AuthorizationController::class, 'captcha'])->name('captcha');
 
 Route::post('/login', [AuthorizationController::class, 'login'])->name('login');
 
