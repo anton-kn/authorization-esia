@@ -29,11 +29,11 @@
             </div>
             <div class="mb-3">
                 <label for="formFile" class="form-label">Суть заявления</label>
-                <input class="form-control" type="file" name="file[]" id="formFile">
+                <input class="form-control" type="file" name="file[STATEMENT]" id="formFile">
             </div>
             <div class="mb-3">
                 <label for="formFile" class="form-label">Приложения к заявлению</label>
-                <input class="form-control" type="file" name="file[]" id="formFile">
+                <input class="form-control" type="file" name="file[]" multiple id="formFile">
             </div>
             <button type="submit" class="btn btn-primary">Подать документы</button>
         </form>

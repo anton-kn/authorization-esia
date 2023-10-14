@@ -4,21 +4,15 @@ namespace App\Http\UseCase;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
-use GuzzleHttp\Cookie\SetCookie;
-use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\RequestOptions;
-use GuzzleHttp\TransferStats;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Symfony\Component\HttpFoundation\Cookie;
 
 
 class Authorization
 {
 
     /**
-     * Получаем каптчу
+     * Получаем капчу
      * @param Request $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
@@ -136,7 +130,7 @@ class Authorization
         Log::debug("Содержание тела ", (array) $bodyContent);
 
         // todo - обходим капчу, если есть
-        // todo - надо тут еще забрать guid: 6de0f0a8-1155-91ed-b9f7-802ddf624241
+        // todo - надо тут еще guid: 6de0f0a8-1155-91ed-b9f7-802ddf624241
         if (isset($bodyContent->action) && $bodyContent->action == "SOLVE_ANOMALY_REACTION") {
             return $this->captcha($request, $client);
         }
@@ -189,7 +183,7 @@ class Authorization
         Log::debug("Содержание тело ответа: ", (array) $bodyContent);
         Log::debug("Ответ: ", (array) $responseLoginCode);
 
-        // Переходим на сайт stavmirsud
+        // Переходим на сайт stavmirsud по сслыке, которую получаем от госуслуг
         $jar = new CookieJar();
         $responseStavmirsud = $client->request("GET", $redirectUrl, [
             'cookies' => $jar,
@@ -199,15 +193,6 @@ class Authorization
         session(['cookies' => $jar]);
 
         Log::debug("Сайт судей: ", (array) $responseStavmirsud);
-        Log::debug("Куки: ", (array) $jar);
-
-        return redirect()->action([ReceptionDocumentController::class, 'upload']);
-
-        // foreach ($jar->toArray() as $cookie) {
-        //     $cookieSet = new SetCookie($cookie);
-        // }
-
-        // не переходит по кукам
-        // return redirect("https://lk.stavmirsud.ru/lk")->withCookie($cookieSet->__toString());
+        Log::debug("Куки для сайта судей: ", (array) $jar);
     }
 }

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\UseCase\Authorization;
-use GuzzleHttp\Psr7\Utils;
+use GuzzleHttp\Cookie\SetCookie;
 use Illuminate\Http\Request;
 use App\Http\UseCase\ReceptionDocument;
 
@@ -12,18 +12,10 @@ use App\Http\UseCase\ReceptionDocument;
  */
 class ReceptionDocumentController extends Controller
 {
-
-    public function test(Request $request)
-    {
-        // dd($request->getSession());
-        // $body = Utils::tryFopen('../storage/app/public/files/Test.pdf', 'r');
-        // dd($body);
-        return redirect()->action([ReceptionDocumentController::class, 'upload']);
-    }
-
     /**
      * Сохраняем документы
      * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse|mixed
      */
     public function store(Request $request)
     {
@@ -32,13 +24,25 @@ class ReceptionDocumentController extends Controller
 
         // авторизуемся на сайте через госуслуги
         (new Authorization())->login($request);
+
+        return redirect()->route("login-sms");
     }
+
 
     /**
      * Загружаем документы на stavmirsud после регистрации
+     * @param Request $request
+     * @return string
      */
-    public function upload(Request $request)
+    public function upload(Request $request): string
     {
         (new ReceptionDocument())->uploadDocument($request);
+
+        $cookies = session('cookies');
+        foreach ($cookies->toArray() as $cookie) {
+            $cookieSet = new SetCookie($cookie);
+        }
+
+        return "Ok";
     }
 }
